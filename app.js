@@ -1,45 +1,38 @@
-// app.js
-// DUCO Web Miner UI + backend runner cho Termux, Render, VPS
-
 const express = require("express");
 const { spawn } = require("child_process");
 const path = require("path");
 const http = require("http");
 const socketIO = require("socket.io");
-const stripAnsi = require("strip-ansi"); // 👈 Thư viện lọc mã ANSI
+const stripAnsi = require("strip-ansi"); // xoá mã màu ANSI từ miner
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
-// Giao diện tĩnh (HTML/CSS/JS)
+// Phục vụ file tĩnh (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, "public")));
 
-// Trang chính
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Đường dẫn tới miner
 const minerPath = path.join(__dirname, "miner", "index.js");
-
-// Bộ đệm log trong RAM
 let logBuffer = "";
 
-// Gửi log + lưu lại
+// Hàm phát log + lưu vào RAM
 function broadcastLog(msg) {
-  const clean = stripAnsi(msg); // 🧼 Bỏ mã ANSI
+  const clean = stripAnsi(msg);
   io.emit("miner-log", clean);
   logBuffer += clean;
   if (logBuffer.length > 10000) logBuffer = logBuffer.slice(-10000);
 }
 
-// Khi có user truy cập, gửi log cũ
+// Khi client truy cập
 io.on("connection", (socket) => {
   socket.emit("miner-log", logBuffer);
 });
 
-// Chạy tiến trình miner
+// Chạy miner NodeJS
 const miner = spawn("node", [minerPath]);
 
 miner.stdout.on("data", (data) => {
@@ -60,7 +53,6 @@ miner.on("exit", (code) => {
   console.log("[EXIT]", msg);
 });
 
-// Lắng nghe cổng
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`✅ Web UI đang chạy tại http://localhost:${PORT}`);
