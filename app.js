@@ -7,47 +7,46 @@ const path = require("path");
 const http = require("http");
 const socketIO = require("socket.io");
 
-// Khởi tạo express + http + socket.io
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
-// Dùng thư mục public chứa giao diện web tĩnh
+// Giao diện tĩnh (HTML/CSS/JS)
 app.use(express.static(path.join(__dirname, "public")));
 
-// Route chính (UI)
+// Trang chính
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Đường dẫn tới NodeJS Miner
+// Đường dẫn tới DUCO miner
 const minerPath = path.join(__dirname, "miner", "index.js");
 
-// Spawn tiến trình DUCO miner
+// Chạy miner dưới dạng tiến trình con
 const miner = spawn("node", [minerPath]);
 
-// Gửi log từ stdout về Web UI
+// Nhận log stdout (log bình thường)
 miner.stdout.on("data", (data) => {
   const msg = data.toString();
-  io.emit("miner-log", msg);
-  process.stdout.write("[MINER] " + msg);
+  io.emit("miner-log", msg); // Gửi sạch log lên UI
+  process.stdout.write("[MINER] " + msg); // Ghi log terminal kèm prefix
 });
 
-// Gửi lỗi từ stderr về Web UI
+// Nhận log lỗi stderr
 miner.stderr.on("data", (data) => {
   const msg = data.toString();
-  io.emit("miner-log", "[ERR] " + msg);
+  io.emit("miner-log", msg); // Cũng gửi log lỗi về UI (ko prefix)
   process.stderr.write("[MINER-ERR] " + msg);
 });
 
 // Khi miner dừng
 miner.on("exit", (code) => {
   const msg = `Miner exited with code ${code}`;
-  io.emit("miner-log", "[EXIT] " + msg);
-  console.log(msg);
+  io.emit("miner-log", msg);
+  console.log("[EXIT]", msg);
 });
 
-// Lắng nghe cổng
+// Mở cổng web UI
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`✅ Web UI đang chạy tại http://localhost:${PORT}`);
