@@ -6,58 +6,54 @@ const { spawn } = require("child_process");
 const path = require("path");
 const http = require("http");
 const socketIO = require("socket.io");
+const stripAnsi = require("strip-ansi"); // 👈 Thư viện lọc mã ANSI
 
-// Khởi tạo express + http + socket.io
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
-// Dùng thư mục public chứa giao diện web tĩnh
+// Giao diện tĩnh (HTML/CSS/JS)
 app.use(express.static(path.join(__dirname, "public")));
 
-// Route chính (UI)
+// Trang chính
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-// Đường dẫn tới NodeJS Miner
+// Đường dẫn tới miner
 const minerPath = path.join(__dirname, "miner", "index.js");
 
-// Khởi tạo log buffer (lưu log tạm thời trong RAM)
+// Bộ đệm log trong RAM
 let logBuffer = "";
 
-// Gửi log mới và lưu lại vào logBuffer (giới hạn 10000 ký tự)
+// Gửi log + lưu lại
 function broadcastLog(msg) {
-  io.emit("miner-log", msg);
-  logBuffer += msg;
-  if (logBuffer.length > 10000) {
-    logBuffer = logBuffer.slice(-10000);
-  }
+  const clean = stripAnsi(msg); // 🧼 Bỏ mã ANSI
+  io.emit("miner-log", clean);
+  logBuffer += clean;
+  if (logBuffer.length > 10000) logBuffer = logBuffer.slice(-10000);
 }
 
-// Khi client mới kết nối -> gửi lại log cũ
+// Khi có user truy cập, gửi log cũ
 io.on("connection", (socket) => {
   socket.emit("miner-log", logBuffer);
 });
 
-// Spawn tiến trình DUCO miner
+// Chạy tiến trình miner
 const miner = spawn("node", [minerPath]);
 
-// Gửi log từ stdout về Web UI
 miner.stdout.on("data", (data) => {
   const msg = data.toString();
   broadcastLog(msg);
   process.stdout.write("[MINER] " + msg);
 });
 
-// Gửi lỗi từ stderr về Web UI
 miner.stderr.on("data", (data) => {
   const msg = data.toString();
   broadcastLog(msg);
   process.stderr.write("[MINER-ERR] " + msg);
 });
 
-// Khi miner dừng
 miner.on("exit", (code) => {
   const msg = `Miner exited with code ${code}\n`;
   broadcastLog(msg);
