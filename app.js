@@ -3,7 +3,7 @@ const { spawn } = require("child_process");
 const path = require("path");
 const http = require("http");
 const socketIO = require("socket.io");
-const stripAnsi = require("strip-ansi"); // xoá mã màu ANSI từ miner
+const stripAnsi = require("strip-ansi").default; // ✅ fix lỗi .default
 
 const app = express();
 const server = http.createServer(app);
