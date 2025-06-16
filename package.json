@@ -1,8 +1,11 @@
 {
   "name": "duino-coin-nodejs-miner",
   "version": "1.0.0",
-  "description": "Duino-Coin NodeJS miner",
-  "main": "index.js",
+  "description": "Duino-Coin NodeJS miner + Web UI",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
   "dependencies": {
     "benchmark": "^2.1.4",
     "ini": "^3.0.0",
@@ -11,12 +14,10 @@
     "node-fetch": "^2.6.1",
     "promise-socket": "^6.0.3",
     "rusha": "^0.8.14",
-    "sha1": "^1.1.1"
-    "express"
+    "sha1": "^1.1.1",
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2"
   },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Nam2006",
+  "author": "nam2006",
   "license": "MIT"
 }
