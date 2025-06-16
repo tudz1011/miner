@@ -9,16 +9,39 @@
 </head>
 <body>
   <h2>⛏️ DUCO Miner Log</h2>
+  <div class="controls">
+    <button onclick="clearLog()">🧹 Xóa Log</button>
+  </div>
   <pre id="log">[Log bắt đầu...]\n</pre>
 
   <script>
     const log = document.getElementById("log");
     const socket = io();
 
+    // Load log cũ từ localStorage
+    const oldLog = localStorage.getItem("minerLog");
+    if (oldLog) {
+      log.textContent = oldLog;
+    }
+
+    // Khi nhận log mới
     socket.on("miner-log", (msg) => {
       log.textContent += msg;
       log.scrollTop = log.scrollHeight;
+
+      // Lưu lại log vào localStorage
+      const maxLen = 10000;
+      if (log.textContent.length > maxLen) {
+        log.textContent = log.textContent.slice(-maxLen);
+      }
+      localStorage.setItem("minerLog", log.textContent);
     });
+
+    // Xoá log
+    function clearLog() {
+      log.textContent = "";
+      localStorage.removeItem("minerLog");
+    }
   </script>
 </body>
 </html>
