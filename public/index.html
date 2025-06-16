@@ -18,29 +18,15 @@
     const log = document.getElementById("log");
     const socket = io();
 
-    // Load log cũ từ localStorage
-    const oldLog = localStorage.getItem("minerLog");
-    if (oldLog) {
-      log.textContent = oldLog;
-    }
-
-    // Khi nhận log mới
+    // Khi nhận log từ server (bao gồm cả log cũ và log mới)
     socket.on("miner-log", (msg) => {
       log.textContent += msg;
       log.scrollTop = log.scrollHeight;
-
-      // Lưu lại log vào localStorage
-      const maxLen = 10000;
-      if (log.textContent.length > maxLen) {
-        log.textContent = log.textContent.slice(-maxLen);
-      }
-      localStorage.setItem("minerLog", log.textContent);
     });
 
-    // Xoá log
+    // Xoá log hiển thị (chỉ giao diện)
     function clearLog() {
       log.textContent = "";
-      localStorage.removeItem("minerLog");
     }
   </script>
 </body>
