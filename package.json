@@ -12,6 +12,7 @@
     "promise-socket": "^6.0.3",
     "rusha": "^0.8.14",
     "sha1": "^1.1.1"
+    "express"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
