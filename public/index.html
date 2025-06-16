@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DUCO Web Miner UI</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    body {
+      background: #0f0f0f;
+      color: #00ff00;
+      font-family: monospace;
+      padding: 20px;
+    }
+    h2 {
+      color: #00e600;
+    }
+    pre {
+      background: #111;
+      border: 1px solid #333;
+      padding: 15px;
+      max-height: 80vh;
+      overflow-y: scroll;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <h2>⛏️ DUCO Miner Log</h2>
+  <pre id="log">[Log bắt đầu...]\n</pre>
+
+  <script>
+    const log = document.getElementById("log");
+    const socket = io();
+
+    socket.on("miner-log", (msg) => {
+      log.textContent += msg;
+      log.scrollTop = log.scrollHeight;
+    });
+  </script>
+</body>
+</html>
