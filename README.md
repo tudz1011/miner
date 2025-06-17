@@ -1,7 +1,7 @@
 # 🪙 Miner Main
 
 A lightweight CPU miner implementation in Node.js and JavaScript, designed to simulate or connect to real mining pools using SHA-1 hashing.
-
+duinocoin.com
 ---
 
 ## 📁 Project Structure
