@@ -89,6 +89,6 @@ Visit: [http://localhost:3000](http://localhost:3000)
 
 ## 📜 License
 
-MIT © 2024 — Modified & extended by [your_name_here]
+MIT © 2024 — Modified & extended by Nam2006
 
 ---
