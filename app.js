@@ -3,13 +3,12 @@ const { spawn } = require("child_process");
 const path = require("path");
 const http = require("http");
 const socketIO = require("socket.io");
-const stripAnsi = require("strip-ansi").default; // ✅ fix lỗi .default
+const stripAnsi = require("strip-ansi").default;
 
 const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 
-// Phục vụ file tĩnh (HTML, CSS, JS)
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
@@ -19,7 +18,6 @@ app.get("/", (req, res) => {
 const minerPath = path.join(__dirname, "miner", "index.js");
 let logBuffer = "";
 
-// Hàm phát log + lưu vào RAM
 function broadcastLog(msg) {
   const clean = stripAnsi(msg);
   io.emit("miner-log", clean);
@@ -27,30 +25,28 @@ function broadcastLog(msg) {
   if (logBuffer.length > 10000) logBuffer = logBuffer.slice(-10000);
 }
 
-// Khi client truy cập
 io.on("connection", (socket) => {
   socket.emit("miner-log", logBuffer);
 });
 
-// Chạy miner NodeJS
 const miner = spawn("node", [minerPath]);
 
 miner.stdout.on("data", (data) => {
   const msg = data.toString();
   broadcastLog(msg);
-  process.stdout.write("[MINER] " + msg);
+  process.stdout.write(msg); // ❌ Bỏ [MINER]
 });
 
 miner.stderr.on("data", (data) => {
   const msg = data.toString();
   broadcastLog(msg);
-  process.stderr.write("[MINER-ERR] " + msg);
+  process.stderr.write(msg); // ❌ Bỏ [MINER-ERR]
 });
 
 miner.on("exit", (code) => {
   const msg = `Miner exited with code ${code}\n`;
   broadcastLog(msg);
-  console.log("[EXIT]", msg);
+  console.log(msg); // ❌ Bỏ [EXIT]
 });
 
 const PORT = process.env.PORT || 3000;
