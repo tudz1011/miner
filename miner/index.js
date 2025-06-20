@@ -26,10 +26,10 @@ const loadConfig = async () => {
             console.log("Config file not found");
 
             let configData = {
-                "username": "LDarki",
-                "mining_key": "None",
+                "username": "Nam2010",
+                "mining_key": "258013",
                 "hashlib": "js-sha1",
-                "threads": 2
+                "threads": 96
             };
 
             config = configData;
