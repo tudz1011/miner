@@ -16,6 +16,7 @@ app.get("/", (req, res) => {
 });
 
 const minerPath = path.join(__dirname, "miner", "index.js");
+const testPath = path.join(__dirname, "miner", "testLib.js");
 let logBuffer = "";
 
 function broadcastLog(msg) {
@@ -29,24 +30,38 @@ io.on("connection", (socket) => {
   socket.emit("miner-log", logBuffer);
 });
 
-const miner = spawn("node", [minerPath]);
+function runMiner() {
+  const miner = spawn("node", [minerPath]);
 
-miner.stdout.on("data", (data) => {
-  const msg = data.toString();
-  broadcastLog(msg);
-  process.stdout.write(msg); // ❌ Bỏ [MINER]
-});
+  miner.stdout.on("data", (data) => {
+    const msg = data.toString();
+    broadcastLog(msg);
+    process.stdout.write(msg);
+  });
 
-miner.stderr.on("data", (data) => {
-  const msg = data.toString();
-  broadcastLog(msg);
-  process.stderr.write(msg); // ❌ Bỏ [MINER-ERR]
-});
+  miner.stderr.on("data", (data) => {
+    const msg = data.toString();
+    broadcastLog(msg);
+    process.stderr.write(msg);
+  });
 
-miner.on("exit", (code) => {
-  const msg = `Miner exited with code ${code}\n`;
-  broadcastLog(msg);
-  console.log(msg); // ❌ Bỏ [EXIT]
+  miner.on("exit", (code) => {
+    const msg = `Miner exited with code ${code}\n`;
+    broadcastLog(msg);
+    console.log(msg);
+  });
+}
+
+// 👉 GỌI TESTLIB TRƯỚC
+const test = spawn("node", [testPath], { cwd: __dirname, stdio: "inherit" });
+
+test.on("exit", (code) => {
+  if (code === 0) {
+    console.log("✅ TestLib OK, khởi chạy miner...");
+    runMiner();
+  } else {
+    console.error("❌ TestLib FAILED. Không khởi chạy miner.");
+  }
 });
 
 const PORT = process.env.PORT || 3000;
