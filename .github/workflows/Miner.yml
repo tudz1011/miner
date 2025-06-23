@@ -1,41 +1,30 @@
-name: DUCO NodeJS Miner (Manual Install)
+name: DUCO CLI Miner
 
 on:
   workflow_dispatch:
 
 jobs:
-  mine:
+  cli-mine:
     runs-on: ubuntu-latest
     timeout-minutes: 360
 
     steps:
     - name: Clone repo
-      run: git clone https://github.com/nam2010-pp/miner.git
+      run: git clone https://github.com/nam2010-pp/minercli.git
 
     - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
 
-    - name: Manual install all dependencies (exact versions)
+    - name: Install CLI-only dependencies
       run: |
         cd miner
         npm init -y
+        npm install benchmark@2.1.4 ini@3.0.0 js-sha1@0.6.0 jshashes@1.0.8 \
+                    node-fetch@2.6.1 promise-socket@6.0.3 rusha@0.8.14 sha1@1.1.1
 
-        # Cài từng gói theo đúng version bạn cần
-        npm install benchmark@2.1.4
-        npm install ini@3.0.0
-        npm install js-sha1@0.6.0
-        npm install jshashes@1.0.8
-        npm install node-fetch@2.6.1
-        npm install promise-socket@6.0.3
-        npm install rusha@0.8.14
-        npm install sha1@1.1.1
-        npm install express@4.18.2
-        npm install socket.io@4.7.2
-        npm install strip-ansi@6.0.1   # ⚠️ ép dùng bản CJS để tránh lỗi require
-
-    - name: Start DUCO Miner
+    - name: Run DUCO CLI Miner
       run: |
         cd miner
-        node app.js
+        node cli.js
