@@ -24,5 +24,4 @@ jobs:
 
     - name: Start miner
       run: |
-        cd miner
         node app.js
