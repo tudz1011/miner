@@ -1,10 +1,10 @@
-name: DUCO Miner
+name: DUCO NodeJS Miner (Manual Install)
 
 on:
   workflow_dispatch:
 
 jobs:
-  run-miner:
+  mine:
     runs-on: ubuntu-latest
     timeout-minutes: 360
 
@@ -17,12 +17,25 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Install dependencies
+    - name: Manual install all dependencies (exact versions)
       run: |
         cd miner
-        npm install
+        npm init -y
 
-    - name: Start miner
+        # Cài từng gói theo đúng version bạn cần
+        npm install benchmark@2.1.4
+        npm install ini@3.0.0
+        npm install js-sha1@0.6.0
+        npm install jshashes@1.0.8
+        npm install node-fetch@2.6.1
+        npm install promise-socket@6.0.3
+        npm install rusha@0.8.14
+        npm install sha1@1.1.1
+        npm install express@4.18.2
+        npm install socket.io@4.7.2
+        npm install strip-ansi@6.0.1   # ⚠️ ép dùng bản CJS để tránh lỗi require
+
+    - name: Start DUCO Miner
       run: |
         cd miner
         node app.js
