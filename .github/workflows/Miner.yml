@@ -1,0 +1,28 @@
+name: Run DUCO Miner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-miner:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+
+    steps:
+    - name: Clone repo
+      run: git clone https://github.com/nam2010-pp/miner.git
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: |
+        cd miner
+        npm install
+
+    - name: Start miner
+      run: |
+        cd miner
+        node app.js
