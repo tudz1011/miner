@@ -6,7 +6,7 @@ on:
 jobs:
   cli-mine:
     runs-on: ubuntu-latest
-    timeout-minutes: 360
+    timeout-minutes: 360  # tối đa 6 giờ
 
     steps:
     - name: Clone repo
@@ -20,9 +20,14 @@ jobs:
     - name: Install CLI-only dependencies
       run: |
         cd miner
-        npm init -y
-        npm install benchmark@2.1.4 ini@3.0.0 js-sha1@0.6.0 jshashes@1.0.8 \
-                    node-fetch@2.6.1 promise-socket@6.0.3 rusha@0.8.14 sha1@1.1.1
+        npm install benchmark@2.1.4
+        npm install ini@3.0.0
+        npm install js-sha1@0.6.0
+        npm install jshashes@1.0.8
+        npm install node-fetch@2.6.1
+        npm install promise-socket@6.0.3
+        npm install rusha@0.8.14
+        npm install sha1@1.1.1
 
     - name: Run DUCO CLI miner
       run: |
