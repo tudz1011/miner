@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - name: Clone repo
-      run: git clone https://github.com/Tudz1011-pp/minercli.git miner
+      run: git clone https://github.com/Tudz1011/minercli.git miner
 
     - name: Setup Node.js
       uses: actions/setup-node@v3
